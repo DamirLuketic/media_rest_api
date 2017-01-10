@@ -101,40 +101,54 @@ class UserController extends Controller
         //
     }
 
-    // route for register
+    // Route for register
     public function register(UserRegisterRequest $request, $object)
     {
-        // test if e-mail is in use
+        // Test if e-mail is in use
         $test_email = User::whereEmail($request->email)->get()->first();
-        // if e-mail is not in use add user and send e-mail for "e-mail confirmation"
-        if(empty($test_email)){
-            $input['name'] = $request->name;
-            $input['email'] = $request->email;
-            $input['password'] = Hash::make($request->password);
-            $input['confirmation_code'] = rand(1, 10000);
-            User::create($input);
-            $basic_url = 'http://www.consilium-europa.com/pages/';
-            $for_email_confirmation = $basic_url . 'media_api/public/api/confirm_email?email='
-                . $request->email . '&confirmation_code=' . $input['confirmation_code'];
-            $mail = new PHPMailer(true);
-            $mail->setFrom('luketic.damir@gmail.com', 'Media');
-            $mail->addAddress($request->email, $request->name);
-            $mail->Subject = 'Confirm e-mail \ Media';
-            $mail->Body    = '<h3>e-mail: ' . $request->email . '</h3><br /><hr /><p>' . 'activate account, ' .
-                $for_email_confirmation . '</p>';
-            $mail->AltBody = 'url';
-            if(!$mail->send()) {
-                echo json_encode('Message could not be sent.');
-                echo json_encode('Mailer Error: ' . $mail->ErrorInfo);
-            } else {
-                return json_encode('Confirm e-mail to activate account');
+
+        // Test if name is in use -> "e-mail" and "name" have separate test for precise error collecting
+        $test_name = User::whereName($request->name)->get()->first();
+
+        // Ff e-mail is not in use add user and send e-mail for "e-mail confirmation"
+        if(empty($test_email))
+        {
+            if(empty($test_name))
+            {
+                $input['name'] = $request->name;
+                $input['email'] = $request->email;
+                $input['password'] = Hash::make($request->password);
+                $input['confirmation_code'] = rand(1, 10000);
+                User::create($input);
+                $basic_url = 'http://www.consilium-europa.com/pages/';
+                $for_email_confirmation = $basic_url . 'media_api/public/api/confirm_email?email='
+                    . $request->email . '&confirmation_code=' . $input['confirmation_code'];
+                $mail = new PHPMailer(true);
+                $mail->setFrom('luketic.damir@gmail.com', 'Media');
+                $mail->addAddress($request->email, $request->name);
+                $mail->Subject = 'Confirm e-mail \ Media';
+                $mail->Body    = '<h3>e-mail: ' . $request->email . '</h3><br /><hr /><p>' . 'activate account, ' .
+                    $for_email_confirmation . '</p>';
+                $mail->AltBody = 'url';
+                if(!$mail->send()) {
+                    echo json_encode('Message could not be sent.');
+                    echo json_encode('Mailer Error: ' . $mail->ErrorInfo);
+                } else {
+                    return json_encode('Confirm e-mail to activate account');
+                }
+            }else{
+                return json_encode('Name in use');
             }
         }else{
-            return json_encode('Email in use');
+            if(empty($test_name)){
+                return json_encode('Email in use');
+            }else{
+                return json_encode('Email and name in use');
+            }
         }
     }
 
-    // function for e-mail confirmation
+    // Function for e-mail confirmation
     public function confirm_email(UserConfirmEmailRequest $request){
         $user = User::whereEmail($request->email)->whereConfirmationCode($request->confirmation_code)->first();
         if(empty($user)){
@@ -151,7 +165,7 @@ class UserController extends Controller
         }
     }
 
-    // route for login
+    // Route for login
     public function login(UserLoginRequest $requests, $object)
     {
         if($user = User::whereEmail($requests->email)->whereActive(1)->first())
@@ -162,7 +176,8 @@ class UserController extends Controller
                 $user_data['name'] = $user->name;
                 $user_data['email'] = $user->email;
                 $user_data['admin'] = $user->admin;
-                $user_data['visible'] = $user->admin;
+                $user_data['visible'] = $user->visible;
+                $user_data['image_url'] = $user->image_url;
 
                 return json_encode($user_data);
             } else
@@ -175,7 +190,7 @@ class UserController extends Controller
         }
     }
 
-    // route for send contact
+    // Route for send contact
     public function send_email(UserSendEmailRequest $request, $object)
     {
         $mail = new PHPMailer(true);

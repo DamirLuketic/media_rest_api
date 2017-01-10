@@ -19,16 +19,13 @@ class CreateConditionsTable extends Migration
             $table->timestamps();
         });
 
+        // Dummy data
         DB::table('conditions')->insert([
-            'name' => 'Poor'
+            'name' => 'Brand New'
         ]);
 
         DB::table('conditions')->insert([
-            'name' => 'Fair'
-        ]);
-
-        DB::table('conditions')->insert([
-            'name' => 'Good'
+            'name' => 'Like New'
         ]);
 
         DB::table('conditions')->insert([
@@ -36,7 +33,11 @@ class CreateConditionsTable extends Migration
         ]);
 
         DB::table('conditions')->insert([
-            'name' => 'Mint'
+            'name' => 'Good'
+        ]);
+
+        DB::table('conditions')->insert([
+            'name' => 'Poor'
         ]);
     }
 

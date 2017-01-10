@@ -21,18 +21,37 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => 'cors'], function(){
 
     Route::resource('/users', 'UserController');
-    Route::resource('/media', 'MediaController');
+    Route::resource('/audio', 'AudioController');
+    Route::resource('/video', 'VideoController');
 
-    // route for register
+    // Route for register
     Route::post('/register/{object}', 'UserController@register');
 
-    // confirm e-mail
+    // Route for e-mail confirmation
     Route::get('/confirm_email', 'UserController@confirm_email');
 
-    // route for login
+    // Route for login
     Route::post('/login/{object}', 'UserController@login');
 
-    // route for contact
+    // Route for contact
     Route::post('/send_email/{object}', 'UserController@send_email');
+
+    // Route for get audio "for change" data
+    Route::get('/audio_for_change', 'AudioController@audio_for_change');
+
+    // Route for get video "for change" data
+    Route::get('/video_for_change', 'VideoController@video_for_change');
+
+    // Route for collect audio "allowed" data
+    Route::post('/audio_allowed/{user_id}', 'AudioController@audio_allowed');
+
+    // Route for collect video "allowed" data
+    Route::post('/video_allowed/{user_id}', 'VideoController@video_allowed');
+
+    // Route for collect audio "personal" data
+    Route::post('/audio_personal/{user_id}', 'AudioController@audio_personal');
+
+    // Route for collect video "personal" data
+    Route::post('/video_personal/{user_id}', 'VideoController@video_personal');
 
 });

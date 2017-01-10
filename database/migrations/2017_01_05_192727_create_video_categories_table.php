@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCanViewsTable extends Migration
+class CreateVideoCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,19 @@ class CreateCanViewsTable extends Migration
      */
     public function up()
     {
-        Schema::create('can_views', function (Blueprint $table) {
+        Schema::create('video_categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('can_view_id');
+            $table->string('name');
             $table->timestamps();
         });
 
-        DB::table('can_views')->insert([
-            'user_id'     => 1,
-            'can_view_id' => 2
+        // Dummy data
+        DB::table('video_categories')->insert([
+            'name' => 'DVD'
+        ]);
+
+        DB::table('video_categories')->insert([
+            'name' => 'Blu-ray'
         ]);
     }
 
@@ -33,6 +36,6 @@ class CreateCanViewsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('can_views');
+        Schema::dropIfExists('video_categories');
     }
 }

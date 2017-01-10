@@ -14,8 +14,10 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [
-        'name', 'email', 'password', 'active', 'confirmation_code', 'admin', 'visible'
+    protected $fillable =
+        [
+        'name', 'email', 'password', 'active', 'confirmation_code', 'admin', 'image_url', 'items_visible',
+            'email_available'
     ];
 
     /**
@@ -23,32 +25,44 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = [
+    protected $hidden =
+        [
         'password', 'remember_token',
     ];
 
-    // Access image from Polymorphic table -> one image
-    public function image(){
-        return $this->morphOne('App\Image', 'imageable');
+    // Access can view
+    public function can_view()
+    {
+        return $this->hasMany('App\CanView');
     }
 
-    // Access media
-    public function media(){
-        return $this->hasMany('App\Media');
-    }
-
-    // Access comment -> has many
-    public function comments(){
+    // Access comments
+    public function comments()
+    {
         return $this->hasMany('App\Comment');
     }
 
     // Access grades
-    public function grades(){
+    public function grades()
+    {
         return $this->hasMany('App\Grade');
     }
 
-    // Access can view
-    public function can_view(){
-        return $this->hasMany('App\CanView');
+    // Access audio
+    public function audio()
+    {
+        return $this->hasMany('App\Audio');
+    }
+
+    // Access videos
+    public function videos()
+    {
+        return $this->hasMany('App\Video');
+    }
+
+    // Access messages (for "send" and "receive")
+    public function messages()
+    {
+        return $this->hasMany('App\Message');
     }
 }
