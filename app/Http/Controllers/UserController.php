@@ -115,6 +115,26 @@ class UserController extends Controller
         {
             if(empty($test_name))
             {
+                // Compile message for user (for each language different message)
+                $user_language = $request->language;
+                $message_for_user_subject = '';
+                $message_for_user = '';
+
+                if($user_language == 'de'){
+                    $message_for_user_subject = 'E-Mail bestätigen \ Media';
+                    $message_for_user = 'Konto aktivieren, 
+                    (nach erfolgreicher Aktivierung werden Sie auf die Seite "Media" umgeleitet)';
+                }elseif($user_language == 'hr'){
+                    $message_for_user_subject = 'Confirm e-mail \ Media';
+                    $message_for_user = 'Aktivirajte korisnički račun, 
+                    (nakon uspješne aktivacije bit ćete preusmjereni na "Media" stranicu)';
+                }else{
+                    $message_for_user_subject = 'Potvrda e-maila \ Media';
+                    $message_for_user == 'activate the account 
+                    (after successful activation you will be redirected to "Media" page)';
+                }
+
+
                 $input['name'] = $request->name;
                 $input['email'] = $request->email;
                 $input['password'] = Hash::make($request->password);
@@ -126,24 +146,28 @@ class UserController extends Controller
                 $mail = new PHPMailer(true);
                 $mail->setFrom('luketic.damir@gmail.com', 'Media');
                 $mail->addAddress($request->email, $request->name);
-                $mail->Subject = 'Confirm e-mail \ Media';
-                $mail->Body    = '<h3>e-mail: ' . $request->email . '</h3><br /><hr /><p>' . 'activate account, ' .
-                    $for_email_confirmation . '</p>';
-                $mail->AltBody = 'url';
+                $mail->Subject = $message_for_user_subject;
+                $mail->Body    = '<h3>e-mail: ' . $request->email . '</h3><br /><hr /><p>' . $message_for_user .
+                    '<br />' . $for_email_confirmation . '</p>';
+                $mail->AltBody = 'Access HTML data for details';
                 if(!$mail->send()) {
                     echo json_encode('Message could not be sent.');
                     echo json_encode('Mailer Error: ' . $mail->ErrorInfo);
                 } else {
-                    return json_encode('Confirm e-mail to activate account');
+                    // Success (case 4) -> Confirm e-mail to activate account
+                    return json_encode('4');
                 }
             }else{
-                return json_encode('Name in use');
+                // Error 1 -> Name in use
+                return json_encode('1');
             }
         }else{
             if(empty($test_name)){
-                return json_encode('Email in use');
+                // Error 2 -> E-mail in use
+                return json_encode('2');
             }else{
-                return json_encode('Email and name in use');
+                // Error 3 -> E-mail and name in use
+                return json_encode('3');
             }
         }
     }
@@ -152,22 +176,23 @@ class UserController extends Controller
     public function confirm_email(UserConfirmEmailRequest $request){
         $user = User::whereEmail($request->email)->whereConfirmationCode($request->confirmation_code)->first();
         if(empty($user)){
-            return json_encode('Wrong e-mail or code');
+            return json_encode('Error');
         }else{
             $new_code = rand(500, 10000);
             $user->update([
                 'active'          => 1,
                 'confirmation_code' => $new_code
             ]);
-            echo 'Account is now active';
-            echo '<br />';
-            echo '<a href="http://www.consilium-europa.com/pages/media/">To page</a>';
+            echo '<meta http-equiv="refresh" content="0; URL=\'http://www.consilium-europa.com/pages/media\'"/> ';
+            echo 'Positive';
         }
     }
 
-    // Route for login
+    // Function for login
     public function login(UserLoginRequest $requests, $object)
     {
+     $user_language = $requests->language;
+
         if($user = User::whereEmail($requests->email)->whereActive(1)->first())
         {
             if (password_verify($requests->password, $user->password))
@@ -182,15 +207,41 @@ class UserController extends Controller
                 return json_encode($user_data);
             } else
             {
-                return json_encode('False password');
+                $password_error = '';
+
+                if($user_language == 'de')
+                {
+                    $password_error = 'Falsches Passwort';
+                }elseif ($user_language == 'hr')
+                {
+                    $password_error = 'Netočna zaporka';
+                }else
+                {
+                    $password_error = 'False password';
+                }
+
+                return json_encode($password_error);
             }
         }else
         {
-            return json_encode('False e-mail and\or password, or e-mail is not confirmed');
+            $password_email_error = '';
+
+            if($user_language == 'de')
+            {
+                $password_email_error = 'Falsche E-Mail und \ oder Passwort, oder E-Mail ist nicht bestätigt';
+            }elseif ($user_language == 'hr')
+            {
+                $password_email_error = 'Netočan e-mail i \ ili lozinka, ili e-mail nije potvrđen';
+            }else
+            {
+                $password_email_error = 'False e-mail and\or password, or e-mail is not confirmed';
+            }
+
+            return json_encode($password_email_error);
         }
     }
 
-    // Route for send contact
+    // Function for send contact
     public function send_email(UserSendEmailRequest $request, $object)
     {
         $mail = new PHPMailer(true);
@@ -207,4 +258,34 @@ class UserController extends Controller
             return json_encode('Message send');
         }
     }
+
+    // Function for upload user image
+    public function user_image(Request $request, $user_id)
+    {
+        if ($request->hasFile('photo')) {
+
+            $user = User::findOrFail($user_id);
+            $basic_path = public_path() . '/images/users/' . $user_id . '/';
+
+            // If exist, remove old image
+            if($user->image_url != null)
+            {
+                unlink($basic_path . $user->image_url);
+            }
+
+            // Upload new image
+            $image = $request->file('photo');
+            $name = time() . $image->getClientOriginalName();
+            $image->move('images/users/' . $user_id, $name);
+
+            // Update user image root
+            $user->image_url = $name;
+            $user->save();
+
+            return json_encode($name);
+        }else{
+            return json_encode('error');
+        }
+    }
+
 }

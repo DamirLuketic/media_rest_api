@@ -19,7 +19,8 @@ class CreateMessagesTable extends Migration
             $table->integer('user_receive_id');
             $table->string('media_type');
             $table->integer('media_id');
-            $table->text('message');
+            $table->string('title');
+            $table->text('content');
             $table->timestamps();
         });
     }

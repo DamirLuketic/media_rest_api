@@ -8,8 +8,8 @@ class Audio extends Model
 {
     protected $fillable =
         [
-            'user_id', 'audio_category_id', 'condition_id', 'band', 'album', 'year', 'for_change',
-            'description', 'allowed'
+            'user_id', 'audio_category_id', 'for_change', 'condition_id', 'allowed', 'band', 'album',
+            'year', 'first_release_year', 'description', 'personal_note', 'cat', 'label', 'barcode_numbers'
         ];
 
     // Access audio category
@@ -40,5 +40,11 @@ class Audio extends Model
     public function comments()
     {
         return $this->morphMany('App\Comment', 'commentable');
+    }
+
+    // Access polymorphic table for identifiers
+    public function identifiers()
+    {
+        return $this->morphMany('App\Identifier', 'identifierable');
     }
 }

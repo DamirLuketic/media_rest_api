@@ -4,15 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Image extends Model
+class Identifier extends Model
 {
     protected $fillable =
         [
-            'url', 'featured'
-    ];
+            'title', 'input'
+        ];
 
     // Permit data store from other table (in polymorphic relation) \\ Audio & Video
-    public function imageable()
+    public function identifierable()
     {
         return $this->morphTo();
     }

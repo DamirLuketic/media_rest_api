@@ -21,11 +21,22 @@ class CreateConditionsTable extends Migration
 
         // Dummy data
         DB::table('conditions')->insert([
-            'name' => 'Brand New'
+            'name' => 'Not selected'
         ]);
 
         DB::table('conditions')->insert([
-            'name' => 'Like New'
+            'name' => 'Sealed Albums'
+        ]);
+
+        DB::table('conditions')->insert([
+            'name' => 'Mint'
+        ]);
+
+        DB::table('conditions')->insert([
+            'name' => 'Near Mint'
+        ]);
+        DB::table('conditions')->insert([
+            'name' => 'Excellent'
         ]);
 
         DB::table('conditions')->insert([
@@ -39,6 +50,11 @@ class CreateConditionsTable extends Migration
         DB::table('conditions')->insert([
             'name' => 'Poor'
         ]);
+
+        DB::table('conditions')->insert([
+            'name' => 'Promotional Copies'
+        ]);
+
     }
 
     /**

@@ -54,4 +54,7 @@ Route::group(['middleware' => 'cors'], function(){
     // Route for collect video "personal" data
     Route::post('/video_personal/{user_id}', 'VideoController@video_personal');
 
+    // Route for upload user image
+    Route::post('/user_image/{user_id}', 'UserController@user_image');
+
 });

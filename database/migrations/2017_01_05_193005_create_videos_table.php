@@ -17,13 +17,17 @@ class CreateVideosTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('video_category_id');
-            $table->integer('condition_id');
+            $table->boolean('for_change')->default(0);
+            $table->integer('condition_id')->default(1);
+            $table->boolean('allowed')->default(1);
             $table->string('name');
             $table->string('director')->nullable();
             $table->integer('year')->nullable();
-            $table->boolean('for_change')->default(0);
+            $table->integer('first_release_year')->nullable();
             $table->text('description')->nullable();
-            $table->boolean('allowed')->default(1);
+            $table->text('personal_note')->nullable();
+            $table->string('barcode_numbers')->nullable();
+
             $table->timestamps();
         });
 

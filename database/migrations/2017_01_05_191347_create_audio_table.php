@@ -17,13 +17,18 @@ class CreateAudioTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('audio_category_id');
-            $table->integer('condition_id');
+            $table->boolean('for_change')->default(0);
+            $table->integer('condition_id')->default(1);
+            $table->boolean('allowed')->default(1);
             $table->string('band');
             $table->string('album');
             $table->integer('year')->nullable();
-            $table->boolean('for_change')->default(0);
+            $table->integer('first_release_year')->nullable();
             $table->text('description')->nullable();
-            $table->boolean('allowed')->default(1);
+            $table->text('personal_note')->nullable();
+            $table->string('cat')->nullable();
+            $table->string('label')->nullable();
+            $table->string('barcode_numbers')->nullable();
             $table->timestamps();
         });
 
@@ -36,6 +41,9 @@ class CreateAudioTable extends Migration
             'album'              => 'Painkiller',
             'year'               => 1990,
             'for_change'         => 1,
+            'description'        => 'Some description for item painkiller',
+            'created_at'         => '2016-12-15',
+            'updated_at'         => '2016-12-18'
         ]);
 
         DB::table('audio')->insert([
@@ -45,6 +53,7 @@ class CreateAudioTable extends Migration
             'band'              => 'Judas Priest',
             'album'             => 'British Steel',
             'for_change'        => 1,
+            'description'       => 'Some description for item British Steel'
         ]);
 
         DB::table('audio')->insert([
@@ -53,7 +62,7 @@ class CreateAudioTable extends Migration
             'condition_id'      => 3,
             'band'              => 'Band 1',
             'album'             => 'Album 1',
-            'for_change'        => 1,
+            'for_change'        => 1
         ]);
 
         DB::table('audio')->insert([
@@ -62,7 +71,7 @@ class CreateAudioTable extends Migration
             'condition_id'      => 3,
             'band'              => 'Band 1',
             'album'             => 'Album 2',
-            'for_change'        => 1,
+            'for_change'        => 1
         ]);
     }
 

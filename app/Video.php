@@ -8,8 +8,8 @@ class Video extends Model
 {
     protected $fillable =
         [
-            'user_id', 'video_category_id', 'condition_id', 'name', 'director', 'year',
-            'for_change', 'description', 'allowed'
+            'user_id', 'video_category_id', 'for_change', 'condition_id', 'allowed', 'name',
+            'director', 'year', 'first_release_year', 'description', 'personal_note', 'barcode_numbers'
         ];
 
     // Access actors -> through pivot table
@@ -33,7 +33,7 @@ class Video extends Model
     // Access polymorphic table for images
     public function images()
     {
-        return $this->morphMany('App\Image', 'imageable');
+        return $this->morphMany('App\Image', 'imageable')->where('imageable_type', 'App\Video');
     }
 
     // Access user
@@ -46,5 +46,11 @@ class Video extends Model
     public function comments()
     {
         return $this->morphMany('App\Comment', 'commentable');
+    }
+
+    // Access polymorphic table for identifiers
+    public function identifiers()
+    {
+        return $this->morphMany('App\Identifier', 'identifierable');
     }
 }

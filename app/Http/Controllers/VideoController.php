@@ -94,18 +94,47 @@ class VideoController extends Controller
         {
             foreach ($user->videos as $video)
             {
-                if($video->for_change === 1 && $video->allowed === 1)
+                $images = [];
+
+                foreach ($video->images as $image)
+                {
+                    // We can't use here "select" (it will retrieve data for all polymorphic tables)
+                    $image_obj = [];
+                    $image_obj['id']        = $image->id;
+                    $image_obj['url']       = $image->url;
+                    $image_obj['featured']  = $image->featured;
+
+                    $images[] = $image_obj;
+                }
+
+                // Create identifiers array
+                $identifiers = [];
+                foreach ($video->identifiers as $identifier) {
+                    // We can't use here "select" (it will retrieve data for all polymorphic tables)
+                    $identifiers_obj = [];
+                    $identifiers_obj['id']     = $identifier->id;
+                    $identifiers_obj['title']  = $identifier->title;
+                    $identifiers_obj['input']  = $identifier->input;
+
+                    $identifiers[] = $identifiers_obj;
+                }
+
+                if($video->for_change == 1 && $video->allowed == 1)
                 {
                     $items[] = array(
-                        'owner_name'        => $user->name,
-                        'id'                => $video->id,
-                        'user_id'           => $video->user_id,
-                        'video_category_id' => $video->video_category_id,
-                        'condition_id'      => $video->condition_id,
-                        'name'              => $video->name,
-                        'director'          => $video->director,
-                        'year'              => $video->year,
-                        'description'       => $video->description
+                        'owner_name'         => $user->name,
+                        'id'                 => $video->id,
+                        'user_id'            => $video->user_id,
+                        'video_category_id'  => $video->video_category_id,
+                        'condition_id'       => $video->condition_id,
+                        'name'               => $video->name,
+                        'director'           => $video->director,
+                        'year'               => $video->year,
+                        'description'        => $video->description,
+                        'first_release_year' => $video->first_release_year,
+                        'barcode_numbers'    => $video->barcode_numbers,
+                        'images'             => $images,
+                        'identifiers'        => $identifiers
                     );
                 }
             }
@@ -136,19 +165,48 @@ class VideoController extends Controller
             {
                 foreach ($user->videos as $video)
                 {
-                    if($video->for_change === 1 && $video->allowed === 1)
+                    $images = [];
+
+                    foreach ($video->images as $image)
+                    {
+                        // We can't use here "select" (it will retrieve data for all polymorphic tables)
+                        $image_obj = [];
+                        $image_obj['id']        = $image->id;
+                        $image_obj['url']       = $image->url;
+                        $image_obj['featured']  = $image->featured;
+
+                        $images[] = $image_obj;
+                    }
+
+                    // Create identifiers array
+                    $identifiers = [];
+                    foreach ($video->identifiers as $identifier) {
+                        // We can't use here "select" (it will retrieve data for all polymorphic tables)
+                        $identifiers_obj = [];
+                        $identifiers_obj['id']     = $identifier->id;
+                        $identifiers_obj['title']  = $identifier->title;
+                        $identifiers_obj['input']  = $identifier->input;
+
+                        $identifiers[] = $identifiers_obj;
+                    }
+
+                    if($video->for_change == 1 && $video->allowed == 1)
                     {
                         $items[] = array(
-                            'owner_name'        => $user->name,
-                            'id'                => $video->id,
-                            'user_id'           => $video->user_id,
-                            'video_category_id' => $video->video_category_id,
-                            'condition_id'      => $video->condition_id,
-                            'name'              => $video->name,
-                            'director'          => $video->director,
-                            'year'              => $video->year,
-                            'description'       => $video->description,
-                            'for_change'        => $video->for_change
+                            'owner_name'         => $user->name,
+                            'id'                 => $video->id,
+                            'user_id'            => $video->user_id,
+                            'video_category_id'  => $video->video_category_id,
+                            'condition_id'       => $video->condition_id,
+                            'name'               => $video->name,
+                            'director'           => $video->director,
+                            'year'               => $video->year,
+                            'description'        => $video->description,
+                            'for_change'         => $video->for_change,
+                            'first_release_year' => $video->first_release_year,
+                            'barcode_numbers'    => $video->barcode_numbers,
+                            'images'             => $images,
+                            'identifiers'        => $identifiers
                         );
                     }
                 }
@@ -160,8 +218,55 @@ class VideoController extends Controller
     // Access video "personal"
     public function video_personal(Request $request, $user_id)
     {
-        $user_videos = User::findOrFail($user_id)->videos;
+        $user = User::findOrFail($user_id);
+        $items = [];
 
-        return json_encode($user_videos);
+        foreach ($user->videos as $video) {
+            // Create image array
+            $images = [];
+
+            foreach ($video->images as $image) {
+                // We can't use here "select" (it will retrieve data for all polymorphic tables)
+                $image_obj = [];
+                $image_obj['id']        = $image->id;
+                $image_obj['url']       = $image->url;
+                $image_obj['featured']  = $image->featured;
+
+                $images[] = $image_obj;
+            }
+
+            // Create identifiers array
+            $identifiers = [];
+            foreach ($video->identifiers as $identifier) {
+                // We can't use here "select" (it will retrieve data for all polymorphic tables)
+                $identifiers_obj = [];
+                $identifiers_obj['id']     = $identifier->id;
+                $identifiers_obj['title']  = $identifier->title;
+                $identifiers_obj['input']  = $identifier->input;
+
+                $identifiers[] = $identifiers_obj;
+            }
+
+            $items[] = array(
+                'id'                 => $video->id,
+                'user_id'            => $video->user_id,
+                'video_category_id'  => $video->video_category_id,
+                'condition_id'       => $video->condition_id,
+                'name'               => $video->name,
+                'director'           => $video->director,
+                'year'               => $video->year,
+                'description'        => $video->description,
+                'for_change'         => $video->for_change,
+                'allowed'            => $video->allowed,
+                'created_at'         => $video->created_at,
+                'updated_at'         => $video->updated_at,
+                'first_release_year' => $video->first_release_year,
+                'personal_note'      => $video->personal_note,
+                'barcode_numbers'    => $video->barcode_numbers,
+                'images'             => $images,
+                'identifiers'        => $identifiers
+            );
+        }
+        return json_encode($items);
     }
 }
