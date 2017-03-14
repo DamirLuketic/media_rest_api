@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Identifier;
+use App\Image;
 use App\User;
 use App\Video;
 use Illuminate\Http\Request;
@@ -81,10 +83,41 @@ class VideoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $video = Video::findOrFail($id);
+
+        // Delete video images from DB & server
+        if($images = $video->images()->get()){
+            $id_array = [];
+            foreach ($images as $image){
+                unlink(public_path() . $image->url);
+                $id_array[] = $image->id;
+            }
+            Image::destroy($id_array);
+        }
+
+        // Delete video identifiers
+        if($identifiers = $video->identifiers()->get())
+        {
+            $id_array = [];
+            foreach ($identifiers as $identifier)
+            {
+                $id_array[] = $identifier->id;
+            }
+            Identifier::destroy($id_array);
+        }
+
+        // Delete video and collect data
+        $deletedRows = $video->delete();
+
+        // Generate response
+        if($deletedRows == 1){
+            return json_encode('Video deleted');
+        }else{
+            return json_encode('Video not in DB');
+        }
     }
 
-    // Access audio "for change"
+    // Access video "for change"
     public function video_for_change(){
 
         $users = User::whereActive(1)->whereItemsVisible(1)->get();
@@ -122,7 +155,8 @@ class VideoController extends Controller
                 if($video->for_change == 1 && $video->allowed == 1)
                 {
                     $items[] = array(
-                        'owner_name'         => $user->name,
+//                        'owner_name'         => $user->name,
+                        'owner_name'         => $user->email,
                         'id'                 => $video->id,
                         'user_id'            => $video->user_id,
                         'video_category_id'  => $video->video_category_id,
@@ -190,7 +224,7 @@ class VideoController extends Controller
                         $identifiers[] = $identifiers_obj;
                     }
 
-                    if($video->for_change == 1 && $video->allowed == 1)
+                    if($video->allowed == 1)
                     {
                         $items[] = array(
                             'owner_name'         => $user->name,

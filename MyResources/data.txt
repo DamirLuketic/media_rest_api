@@ -20,4 +20,9 @@ DB_PASSWORD=post1982
 
 b) on net test with "UserController" => method 'register'
 
+
 // Test // add relation in migration with "on delete" // make schema with MySQL workbanch
+
+// //////////////////////////////////
+WORK WITHOUT ADJUSTMENT c) when on net use in Audio and Video controller -> method destroy -> real path instead "public path()"
+/////////////////////////////////////

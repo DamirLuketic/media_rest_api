@@ -17,8 +17,6 @@ class CreateMessagesTable extends Migration
             $table->increments('id');
             $table->integer('user_send_id');
             $table->integer('user_receive_id');
-            $table->string('media_type');
-            $table->integer('media_id');
             $table->string('title');
             $table->text('content');
             $table->timestamps();

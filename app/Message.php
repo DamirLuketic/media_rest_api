@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Message extends Model
 {
     protected $fillable = [
-        'user_send_id', 'user_receive_id', 'media_type', 'media_id', 'title', 'content'
+        'user_send_id', 'user_receive_id', 'title', 'content'
     ];
 
     // Access user (for "send" and "receive")
@@ -15,6 +15,4 @@ class Message extends Model
     {
         return $this->belongsTo('App\User');
     }
-
-
 }

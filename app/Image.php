@@ -8,7 +8,7 @@ class Image extends Model
 {
     protected $fillable =
         [
-            'url', 'featured'
+            'url', 'featured',
     ];
 
     // Permit data store from other table (in polymorphic relation) \\ Audio & Video

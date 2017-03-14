@@ -21,7 +21,7 @@ class CreateVideosTable extends Migration
             $table->integer('condition_id')->default(1);
             $table->boolean('allowed')->default(1);
             $table->string('name');
-            $table->string('director')->nullable();
+            $table->string('director');
             $table->integer('year')->nullable();
             $table->integer('first_release_year')->nullable();
             $table->text('description')->nullable();
@@ -37,6 +37,7 @@ class CreateVideosTable extends Migration
             'video_category_id' => 1,
             'condition_id' => 2,
             'name' => 'The Silence of the Lambs',
+            'director' => 'Someone',
             'year' => 1991,
             'for_change' => 1,
         ]);
@@ -46,6 +47,7 @@ class CreateVideosTable extends Migration
             'video_category_id' => 2,
             'condition_id' => 3,
             'name' => 'Hannibal',
+            'director' => 'Someone',
             'for_change' => 1,
         ]);
 
@@ -54,6 +56,7 @@ class CreateVideosTable extends Migration
             'video_category_id' => 2,
             'condition_id' => 3,
             'name' => 'Some Video',
+            'director' => 'Someone',
             'for_change' => 1,
         ]);
     }

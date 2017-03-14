@@ -23,6 +23,7 @@ Route::group(['middleware' => 'cors'], function(){
     Route::resource('/users', 'UserController');
     Route::resource('/audio', 'AudioController');
     Route::resource('/video', 'VideoController');
+    Route::resource('/media', 'MediaController');
 
     // Route for register
     Route::post('/register/{object}', 'UserController@register');
@@ -57,4 +58,18 @@ Route::group(['middleware' => 'cors'], function(){
     // Route for upload user image
     Route::post('/user_image/{user_id}', 'UserController@user_image');
 
+    // Route for new media images
+    Route::post('/new_media_images/{media_type}/{media_id}', 'MediaController@new_media_images');
+
+    // Route for delete image
+    Route::post('/delete_image', 'MediaController@delete_image');
+
+    // Route for set new featured image
+    Route::post('/set_new_featured_image', 'MediaController@set_new_featured_image');
+
+    // Route for collect media categories
+    Route::get('/collect_media_categories', 'MediaController@collect_media_categories');
+
+    // Route for collect media conditions
+    Route::get('/collect_conditions', 'MediaController@collect_conditions');
 });

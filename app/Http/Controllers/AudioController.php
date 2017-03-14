@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Audio;
+use App\Identifier;
+use App\Image;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -81,7 +83,38 @@ class AudioController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $audio = Audio::findOrFail($id);
+
+        // Delete audio images from DB & server
+        if($images = $audio->images()->get()){
+            $id_array = [];
+            foreach ($images as $image){
+                unlink(public_path() . $image->url);
+                $id_array[] = $image->id;
+            }
+        Image::destroy($id_array);
+        }
+
+        // Delete audio identifiers
+        if($identifiers = $audio->identifiers()->get())
+        {
+            $id_array = [];
+            foreach ($identifiers as $identifier)
+            {
+                $id_array[] = $identifier->id;
+            }
+            Identifier::destroy($id_array);
+        }
+
+        // Delete audio and collect data
+        $deletedRows = $audio->delete();
+
+        // Generate response
+        if($deletedRows == 1){
+            return json_encode('Audio deleted');
+        }else{
+            return json_encode('Audio not in DB');
+        }
     }
 
     // Access audio "for change"
@@ -118,11 +151,13 @@ class AudioController extends Controller
                     $identifiers[] = $identifiers_obj;
                 }
 
-                if ($audio->for_change == 1 && $audio->allowed == 1) {
+                if ($audio->for_change == 1 && $audio->allowed == 1)
+                {
                     $items[] = array(
-                        'owner_name'         => $user->name,
+//                        'owner_name'         => $user->name,
+                        'owner_name'         => $user->email,
                         'id'                 => $audio->id,
-                        'user_id'            => $audio->id,
+                        'user_id'            => $audio->user_id,
                         'audio_category_id'  => $audio->audio_category_id,
                         'condition_id'       => $audio->condition_id,
                         'band'               => $audio->band,
@@ -188,7 +223,7 @@ class AudioController extends Controller
                         $identifiers[] = $identifiers_obj;
                     }
 
-                    if ($audio->for_change == 1 && $audio->allowed == 1) {
+                    if ($audio->allowed == 1) {
                         $items[] = array(
                             'owner_name'         => $user->name,
                             'id'                 => $audio->id,
